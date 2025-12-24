@@ -270,6 +270,19 @@
             </div>
         </div>
 
+        <!-- NUEVA SECCIÓN: Input de Latas -->
+        <div class="input-group">
+            <label for="latas">🥫 ¿Cuántas latas está llevando?</label>
+            <input 
+                type="number" 
+                id="latas" 
+                placeholder="0" 
+                step="1" 
+                min="0"
+                inputmode="numeric"
+            >
+        </div>
+
         <div class="input-group">
             <label for="dinero">💵 ¿Cuánto dinero recibió?</label>
             <input 
@@ -318,6 +331,7 @@
 
     <script>
         // Referencias a los elementos
+        const inputLatas = document.getElementById('latas');
         const inputDinero = document.getElementById('dinero');
         const inputPanes = document.getElementById('panes');
         const displayDinero = document.getElementById('totalDinero');
@@ -333,8 +347,11 @@
         // Variable para prevenir bucles infinitos
         let calculando = false;
 
-        // Función para seleccionar panes por lata
+        // Función para seleccionar panes por lata CON LÓGICA MEJORADA
         function seleccionarPanesPorLata(cantidad) {
+            // Si ya está seleccionado, no hacer nada
+            if (PANES_POR_LATA === cantidad) return;
+            
             PANES_POR_LATA = cantidad;
             
             // Actualizar estilos de los botones
@@ -346,13 +363,63 @@
                 btn9.classList.remove('selected');
             }
             
-            // Recalcular si hay valores
-            if (inputDinero.value || inputPanes.value) {
-                const dinero = parseFloat(inputDinero.value) || 0;
-                const panes = parseInt(inputPanes.value) || 0;
+            // LÓGICA DE RECALCULO INTELIGENTE
+            // Si hay latas ingresadas, recalcular desde las latas (prioridad)
+            if (inputLatas.value && parseInt(inputLatas.value) > 0) {
+                calculando = true;
+                const latas = parseInt(inputLatas.value);
+                const panesCalculados = latas * PANES_POR_LATA;
+                const dineroCalculado = panesCalculados * PRECIO_POR_PAN;
+                
+                inputPanes.value = panesCalculados;
+                inputDinero.value = dineroCalculado.toFixed(2);
+                actualizarResultados(dineroCalculado, panesCalculados);
+                calculando = false;
+            }
+            // Si NO hay latas pero hay panes, recalcular las latas desde los panes
+            else if (inputPanes.value && parseInt(inputPanes.value) > 0) {
+                calculando = true;
+                const panes = parseInt(inputPanes.value);
+                const latas = Math.floor(panes / PANES_POR_LATA);
+                const dinero = panes * PRECIO_POR_PAN;
+                
+                inputLatas.value = latas > 0 ? latas : '';
+                inputDinero.value = dinero.toFixed(2);
                 actualizarResultados(dinero, panes);
+                calculando = false;
+            }
+            // Si NO hay latas ni panes pero hay dinero, recalcular todo desde el dinero
+            else if (inputDinero.value && parseFloat(inputDinero.value) > 0) {
+                calculando = true;
+                const dinero = parseFloat(inputDinero.value);
+                const panes = Math.round(dinero / PRECIO_POR_PAN);
+                const latas = Math.floor(panes / PANES_POR_LATA);
+                
+                inputPanes.value = panes;
+                inputLatas.value = latas > 0 ? latas : '';
+                actualizarResultados(dinero, panes);
+                calculando = false;
             }
         }
+
+        // Evento cuando cambian las latas
+        inputLatas.addEventListener('input', function() {
+            if (calculando) return;
+            calculando = true;
+            
+            const latas = parseInt(this.value) || 0;
+            const panes = latas * PANES_POR_LATA;
+            const dinero = panes * PRECIO_POR_PAN;
+            
+            // Actualizar campos de panes y dinero
+            inputPanes.value = panes > 0 ? panes : '';
+            inputDinero.value = dinero > 0 ? dinero.toFixed(2) : '';
+            
+            // Actualizar displays
+            actualizarResultados(dinero, panes);
+            
+            calculando = false;
+        });
 
         // Evento cuando cambia el dinero
         inputDinero.addEventListener('input', function() {
@@ -361,9 +428,11 @@
             
             const dinero = parseFloat(this.value) || 0;
             const panes = Math.round(dinero / PRECIO_POR_PAN);
+            const latas = Math.floor(panes / PANES_POR_LATA);
             
-            // Actualizar campo de panes
+            // Actualizar campos de panes y latas
             inputPanes.value = panes > 0 ? panes : '';
+            inputLatas.value = latas > 0 ? latas : '';
             
             // Actualizar displays
             actualizarResultados(dinero, panes);
@@ -378,9 +447,11 @@
             
             const panes = parseInt(this.value) || 0;
             const dinero = panes * PRECIO_POR_PAN;
+            const latas = Math.floor(panes / PANES_POR_LATA);
             
-            // Actualizar campo de dinero
+            // Actualizar campos de dinero y latas
             inputDinero.value = dinero > 0 ? dinero.toFixed(2) : '';
+            inputLatas.value = latas > 0 ? latas : '';
             
             // Actualizar displays
             actualizarResultados(dinero, panes);
@@ -424,6 +495,7 @@
 
         // Función para limpiar todos los campos
         function limpiarTodo() {
+            inputLatas.value = '';
             inputDinero.value = '';
             inputPanes.value = '';
             displayDinero.textContent = '$0.00';
@@ -431,18 +503,28 @@
             displayLatas.textContent = '0 latas';
             
             // Restablecer a 9 panes por lata
-            seleccionarPanesPorLata(9);
+            PANES_POR_LATA = 9;
+            btn9.classList.add('selected');
+            btn10.classList.remove('selected');
             
-            inputDinero.focus();
+            inputLatas.focus();
         }
 
-        // Prevenir valores negativos
+        // Prevenir valores negativos en latas
+        inputLatas.addEventListener('keydown', function(e) {
+            if (e.key === '-' || e.key === 'e' || e.key === '.') {
+                e.preventDefault();
+            }
+        });
+
+        // Prevenir valores negativos en dinero
         inputDinero.addEventListener('keydown', function(e) {
             if (e.key === '-' || e.key === 'e') {
                 e.preventDefault();
             }
         });
 
+        // Prevenir valores negativos en panes
         inputPanes.addEventListener('keydown', function(e) {
             if (e.key === '-' || e.key === 'e' || e.key === '.') {
                 e.preventDefault();
