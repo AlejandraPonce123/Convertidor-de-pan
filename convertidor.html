@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pan con Pollo - Calculadora</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #fff5e6 0%, #ffe0b3 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            padding: 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #d35400;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            color: #555;
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+            background: #fff8f0;
+            padding: 25px;
+            border-radius: 15px;
+            border: 3px solid #f39c12;
+        }
+
+        .instruction-box {            background: #e8f5e9;            border-left: 5px solid #4caf50;            padding: 20px;            border-radius: 10px;            margin-bottom: 30px;        }        .instruction-box p {            font-size: 1.3rem;            color: #2e7d32;            font-weight: 600;            text-align: center;        }
+
+        .input-group label {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 20px;
+            font-size: 2rem;
+            border: 3px solid #d35400;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            color: #2c3e50;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #e67e22;
+            box-shadow: 0 0 0 5px rgba(230, 126, 34, 0.2);
+            transform: scale(1.02);
+        }
+
+        .input-group input::placeholder {
+            color: #bdc3c7;
+            font-weight: normal;
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(211, 84, 0, 0.3);
+            margin-top: 30px;
+        }
+
+        .result-title {
+            text-align: center;
+            font-size: 2rem;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border-left: 6px solid #d35400;
+        }
+
+        .result-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-label {
+            font-size: 1.4rem;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .result-value {
+            font-size: 2.2rem;
+            color: #d35400;
+            font-weight: bold;
+        }
+
+        .icon {
+            font-size: 2.5rem;
+            margin-right: 10px;
+        }
+
+        .clear-btn {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.6rem;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .clear-btn:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .clear-btn:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .input-group label {
+                font-size: 1.5rem;
+            }
+
+            .input-group input {
+                font-size: 1.7rem;
+            }
+
+            .result-value {
+                font-size: 1.8rem;
+            }
+        }
+
+        .highlight {
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍞 Pan con Pollo</h1>
+            <p>Calculadora de Ventas</p>
+        </div>
+
+        <div class="instruction-box">            <p>✨ Escriba en CUALQUIER campo según su necesidad y los demás se calcularán automáticamente</p>        </div>
+
+        <div class="input-group">
+            <label for="dinero">💵 ¿Cuánto dinero recibió?</label>
+            <input 
+                type="number" 
+                id="dinero" 
+                placeholder="0.00" 
+                step="0.01" 
+                min="0"
+                inputmode="decimal"
+            >
+        </div>
+
+        <div class="input-group">
+            <label for="panes">🍞 ¿Cuántos panes quiere?</label>
+            <input 
+                type="number" 
+                id="panes" 
+                placeholder="0" 
+                step="1" 
+                min="0"
+                inputmode="numeric"
+            >
+        </div>
+
+        <div class="result-box">
+            <div class="result-title">📊 Resultado Total</div>
+            
+            <div class="result-item">
+                <div class="result-label">💰 Total en Dólares:</div>
+                <div class="result-value" id="totalDinero">$0.00</div>
+            </div>
+
+            <div class="result-item">
+                <div class="result-label">🍞 Total en Panes:</div>
+                <div class="result-value" id="totalPanes">0 panes</div>
+            </div>
+
+            <div class="result-item">
+                <div class="result-label">📦 Latas Necesarias:</div>
+                <div class="result-value" id="totalLatas">0 latas</div>
+            </div>
+        </div>
+
+        <button class="clear-btn" onclick="limpiarTodo()">🔄 Limpiar Todo</button>
+    </div>
+
+    <script>
+        // Referencias a los elementos
+        const inputDinero = document.getElementById('dinero');
+        const inputPanes = document.getElementById('panes');
+        const displayDinero = document.getElementById('totalDinero');
+        const displayPanes = document.getElementById('totalPanes');
+        const displayLatas = document.getElementById('totalLatas');
+
+        // Constantes de negocio
+        const PRECIO_POR_PAN = 1 / 6; // $1.00 / 6 panes = $0.1666...
+        const PANES_POR_LATA = 9;
+
+        // Variable para prevenir bucles infinitos
+        let calculando = false;
+
+        // Evento cuando cambia el dinero
+        inputDinero.addEventListener('input', function() {
+            if (calculando) return;
+            calculando = true;
+            
+            const dinero = parseFloat(this.value) || 0;
+            const panes = Math.round(dinero / PRECIO_POR_PAN);
+            
+            // Actualizar campo de panes
+            inputPanes.value = panes > 0 ? panes : '';
+            
+            // Actualizar displays
+            actualizarResultados(dinero, panes);
+            
+            calculando = false;
+        });
+
+        // Evento cuando cambian los panes
+        inputPanes.addEventListener('input', function() {
+            if (calculando) return;
+            calculando = true;
+            
+            const panes = parseInt(this.value) || 0;
+            const dinero = panes * PRECIO_POR_PAN;
+            
+            // Actualizar campo de dinero
+            inputDinero.value = dinero > 0 ? dinero.toFixed(2) : '';
+            
+            // Actualizar displays
+            actualizarResultados(dinero, panes);
+            
+            calculando = false;
+        });
+
+        // Función para actualizar todos los resultados
+        function actualizarResultados(dinero, panes) {
+            // Total en dólares
+            displayDinero.textContent = `$${dinero.toFixed(2)}`;
+            displayDinero.parentElement.classList.add('highlight');
+            setTimeout(() => displayDinero.parentElement.classList.remove('highlight'), 500);
+            
+            // Total en panes
+            displayPanes.textContent = `${panes} ${panes === 1 ? 'pan' : 'panes'}`;
+            displayPanes.parentElement.classList.add('highlight');
+            setTimeout(() => displayPanes.parentElement.classList.remove('highlight'), 500);
+            
+            // Desglose de latas (sin decimales)
+            const latasCompletas = Math.floor(panes / PANES_POR_LATA);
+            const panesRestantes = panes % PANES_POR_LATA;
+            
+            let textoLatas = '';
+            
+            if (latasCompletas === 0 && panesRestantes === 0) {
+                textoLatas = '0 latas';
+            } else if (latasCompletas === 0) {
+                textoLatas = `${panesRestantes} ${panesRestantes === 1 ? 'pan suelto' : 'panes sueltos'}`;
+            } else if (panesRestantes === 0) {
+                textoLatas = `${latasCompletas} ${latasCompletas === 1 ? 'lata' : 'latas'}`;
+            } else {
+                const textoPanes = panesRestantes === 1 ? 'pan' : 'panes';
+                textoLatas = `${latasCompletas} ${latasCompletas === 1 ? 'lata' : 'latas'} con ${panesRestantes} ${textoPanes}`;
+            }
+            
+            displayLatas.textContent = textoLatas;
+            displayLatas.parentElement.classList.add('highlight');
+            setTimeout(() => displayLatas.parentElement.classList.remove('highlight'), 500);
+        }
+
+        // Función para limpiar todos los campos
+        function limpiarTodo() {
+            inputDinero.value = '';
+            inputPanes.value = '';
+            displayDinero.textContent = '$0.00';
+            displayPanes.textContent = '0 panes';
+            displayLatas.textContent = '0 latas';
+            inputDinero.focus();
+        }
+
+        // Prevenir valores negativos
+        inputDinero.addEventListener('keydown', function(e) {
+            if (e.key === '-' || e.key === 'e') {
+                e.preventDefault();
+            }
+        });
+
+        inputPanes.addEventListener('keydown', function(e) {
+            if (e.key === '-' || e.key === 'e' || e.key === '.') {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
