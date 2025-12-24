@@ -52,7 +52,20 @@
             border: 3px solid #f39c12;
         }
 
-        .instruction-box {            background: #e8f5e9;            border-left: 5px solid #4caf50;            padding: 20px;            border-radius: 10px;            margin-bottom: 30px;        }        .instruction-box p {            font-size: 1.3rem;            color: #2e7d32;            font-weight: 600;            text-align: center;        }
+        .instruction-box {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .instruction-box p {
+            font-size: 1.3rem;
+            color: #2e7d32;
+            font-weight: 600;
+            text-align: center;
+        }
 
         .input-group label {
             display: block;
@@ -85,6 +98,43 @@
         .input-group input::placeholder {
             color: #bdc3c7;
             font-weight: normal;
+        }
+
+        /* Estilos para los botones de selección de panes por lata */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .option-btn {
+            flex: 1;
+            padding: 25px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: white;
+            color: #2c3e50;
+            border: 3px solid #d35400;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .option-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+
+        .option-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .option-btn.selected {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+            border-color: #27ae60;
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
         }
 
         .result-box {
@@ -176,6 +226,11 @@
                 font-size: 1.7rem;
             }
 
+            .option-btn {
+                font-size: 2rem;
+                padding: 20px;
+            }
+
             .result-value {
                 font-size: 1.8rem;
             }
@@ -198,7 +253,22 @@
             <p>Calculadora de Ventas</p>
         </div>
 
-        <div class="instruction-box">            <p>✨ Escriba en CUALQUIER campo según su necesidad y los demás se calcularán automáticamente</p>        </div>
+        <div class="instruction-box">
+            <p>✨ Escriba en CUALQUIER campo según su necesidad y los demás se calcularán automáticamente</p>
+        </div>
+
+        <!-- NUEVO CAMPO: Panes por lata -->
+        <div class="input-group">
+            <label for="panesPorLata">📦 ¿Cuántos panes tiene la lata?</label>
+            <div class="button-group">
+                <button class="option-btn selected" onclick="seleccionarPanesPorLata(9)" id="btn9">
+                    9 panes
+                </button>
+                <button class="option-btn" onclick="seleccionarPanesPorLata(10)" id="btn10">
+                    10 panes
+                </button>
+            </div>
+        </div>
 
         <div class="input-group">
             <label for="dinero">💵 ¿Cuánto dinero recibió?</label>
@@ -253,13 +323,36 @@
         const displayDinero = document.getElementById('totalDinero');
         const displayPanes = document.getElementById('totalPanes');
         const displayLatas = document.getElementById('totalLatas');
+        const btn9 = document.getElementById('btn9');
+        const btn10 = document.getElementById('btn10');
 
         // Constantes de negocio
         const PRECIO_POR_PAN = 1 / 6; // $1.00 / 6 panes = $0.1666...
-        const PANES_POR_LATA = 9;
+        let PANES_POR_LATA = 9; // Valor por defecto
 
         // Variable para prevenir bucles infinitos
         let calculando = false;
+
+        // Función para seleccionar panes por lata
+        function seleccionarPanesPorLata(cantidad) {
+            PANES_POR_LATA = cantidad;
+            
+            // Actualizar estilos de los botones
+            if (cantidad === 9) {
+                btn9.classList.add('selected');
+                btn10.classList.remove('selected');
+            } else {
+                btn10.classList.add('selected');
+                btn9.classList.remove('selected');
+            }
+            
+            // Recalcular si hay valores
+            if (inputDinero.value || inputPanes.value) {
+                const dinero = parseFloat(inputDinero.value) || 0;
+                const panes = parseInt(inputPanes.value) || 0;
+                actualizarResultados(dinero, panes);
+            }
+        }
 
         // Evento cuando cambia el dinero
         inputDinero.addEventListener('input', function() {
@@ -336,6 +429,10 @@
             displayDinero.textContent = '$0.00';
             displayPanes.textContent = '0 panes';
             displayLatas.textContent = '0 latas';
+            
+            // Restablecer a 9 panes por lata
+            seleccionarPanesPorLata(9);
+            
             inputDinero.focus();
         }
 
